@@ -1,0 +1,9 @@
+
+
+
+spring:
+  security:
+    user:
+      password: MyPAss0987
+    filter:
+      order: 10 # To have 10 filter spaces in front of spring security filters
