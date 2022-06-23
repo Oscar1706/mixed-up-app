@@ -13,6 +13,6 @@ import javax.persistence.Id;
 @ToString
 public class Account {
     @Id
-    private final Long id;
-    private final String name;
+    private Long id;
+    private String name;
 }
