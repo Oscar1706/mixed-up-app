@@ -44,8 +44,7 @@ public class AccountService {
                 .map(account -> {
                     account.setName(newAccount.getName());
                     return accountRepository.save(account);
-                })
-                .orElseGet(()->{
+                }).orElseGet(()->{
                     newAccount.setId(id);
                     return accountRepository.save(newAccount);
                 }));
