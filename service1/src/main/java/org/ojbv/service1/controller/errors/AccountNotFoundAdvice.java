@@ -1,6 +1,5 @@
-package ojbv.service1.controllers.errors;
+package org.ojbv.service1.controller.errors;
 
-import ojbv.service1.AccountNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

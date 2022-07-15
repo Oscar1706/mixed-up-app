@@ -1,7 +1,7 @@
-package ojbv.service1.repository;
+package org.ojbv.service1.repository;
 
 
-import ojbv.service1.entity.Account;
+import org.ojbv.service1.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;

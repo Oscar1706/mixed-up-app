@@ -1,4 +1,4 @@
-package ojbv.service1;
+package org.ojbv.service1;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

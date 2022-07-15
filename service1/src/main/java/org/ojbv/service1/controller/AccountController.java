@@ -1,8 +1,8 @@
-package ojbv.service1.controllers;
+package org.ojbv.service1.controller;
 
-import ojbv.service1.AccountNotFoundException;
-import ojbv.service1.entity.Account;
-import ojbv.service1.repository.AccountRepository;
+import org.ojbv.service1.controller.errors.AccountNotFoundException;
+import org.ojbv.service1.entity.Account;
+import org.ojbv.service1.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,18 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-public class AccountService {
+public class AccountController {
 
     @Autowired
     private AccountRepository accountRepository;
 
-    // Aggregate root
-    // tag::get-aggregate-root[]
     @GetMapping("/accounts")
     ResponseEntity<List<Account>> all(){
         return ResponseEntity.ok(accountRepository.findAll());
     }
-    // end::get-aggregate-root[]
 
     @GetMapping("/accounts/{id}")
     ResponseEntity<Account> findById(@PathVariable long id){
@@ -42,7 +39,7 @@ public class AccountService {
         return ResponseEntity.ok(
                 accountRepository.findById(id)
                 .map(account -> {
-                    account.setName(newAccount.getName());
+                    account.fillFrom(newAccount);
                     return accountRepository.save(account);
                 }).orElseGet(()->{
                     newAccount.setId(id);
@@ -54,10 +51,5 @@ public class AccountService {
     ResponseEntity deleteById(@PathVariable long id){
         accountRepository.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/greeting")
-    public Account getGreeting(){
-        return new Account(1l,"Hi!!");
     }
 }

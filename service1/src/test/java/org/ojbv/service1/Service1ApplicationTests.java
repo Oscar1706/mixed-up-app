@@ -1,4 +1,4 @@
-package ojbv.service1;
+package org.ojbv.service1;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
