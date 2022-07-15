@@ -12,45 +12,46 @@ import java.util.UUID;
 
 @RestController
 public class ClientController {
-    @Autowired
-    private ClientRepository clientRepository;
+  @Autowired private ClientRepository clientRepository;
 
-    @GetMapping("/clients")
-    ResponseEntity<List<Client>> all(){
-        return ResponseEntity.ok(clientRepository.findAll());
-    }
+  @GetMapping("/clients")
+  ResponseEntity<List<Client>> all() {
+    return ResponseEntity.ok(clientRepository.findAll());
+  }
 
-    @GetMapping("/clients/{id}")
-    ResponseEntity<Client> findById(@PathVariable String id){
-        return ResponseEntity.ok(
-                clientRepository
-                        .findById(UUID.fromString(id))
-                        .orElseThrow(()->new EntityNotFoundException(id))
-        );
-    }
+  @GetMapping("/clients/{id}")
+  ResponseEntity<Client> findById(@PathVariable String id) {
+    return ResponseEntity.ok(
+        clientRepository
+            .findById(UUID.fromString(id))
+            .orElseThrow(() -> new EntityNotFoundException(id)));
+  }
 
-    @PostMapping("/clients")
-    ResponseEntity<String> newClient(@RequestBody Client client){
-        return ResponseEntity.ok(clientRepository.save(client).getId().toString());
-    }
+  @PostMapping("/clients")
+  ResponseEntity<String> newClient(@RequestBody Client client) {
+    return ResponseEntity.ok(clientRepository.save(client).getId().toString());
+  }
 
-    @PutMapping("/clients/{id}")
-    ResponseEntity<Client> replaceOneClient(@PathVariable String id, @RequestBody Client newClient){
-        return ResponseEntity.ok(
-                clientRepository.findById(UUID.fromString(id))
-                        .map(client -> {
-                            client.setName(newClient.getName());
-                            return clientRepository.save(client);
-                        }).orElseGet(()->{
-                            newClient.setId(UUID.fromString(id));
-                            return clientRepository.save(newClient);
-                        }));
-    }
+  @PutMapping("/clients/{id}")
+  ResponseEntity<Client> replaceOneClient(@PathVariable String id, @RequestBody Client newClient) {
+    return ResponseEntity.ok(
+        clientRepository
+            .findById(UUID.fromString(id))
+            .map(
+                client -> {
+                  client.setName(newClient.getName());
+                  return clientRepository.save(client);
+                })
+            .orElseGet(
+                () -> {
+                  newClient.setId(UUID.fromString(id));
+                  return clientRepository.save(newClient);
+                }));
+  }
 
-    @DeleteMapping("/clients/{id}")
-    ResponseEntity deleteById(@PathVariable String id){
-        clientRepository.deleteById(UUID.fromString(id));
-        return ResponseEntity.noContent().build();
-    }
-
+  @DeleteMapping("/clients/{id}")
+  ResponseEntity deleteById(@PathVariable String id) {
+    clientRepository.deleteById(UUID.fromString(id));
+    return ResponseEntity.noContent().build();
+  }
 }

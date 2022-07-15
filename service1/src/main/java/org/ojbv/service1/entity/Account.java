@@ -13,26 +13,17 @@ import java.time.LocalDateTime;
 @Entity
 @ToString
 public class Account {
-    @Id
-    @NonNull
-    private Long id;
-    @NonNull
-    private Double balance;
-    @NonNull
-    private String status;
-    @NonNull
-    private LocalDateTime addedDate;
-    @NonNull
-    private String comment;
+  @Id @NonNull private Long id;
+  @NonNull private Double balance;
+  @NonNull private String status;
+  @NonNull private LocalDateTime addedDate;
+  @NonNull private String comment;
 
-    /**
-     * Fills instance values (except id) from
-     * another instance.
-     * */
-    public void fillFrom(Account otherAccount){
-        this.balance = otherAccount.getBalance();
-        this.status = otherAccount.getStatus();
-        this.addedDate = otherAccount.getAddedDate();
-        this.comment = otherAccount.getComment();
-    }
+  /** Fills instance values (except id) from another instance. */
+  public void fillFrom(Account otherAccount) {
+    this.balance = otherAccount.getBalance();
+    this.status = otherAccount.getStatus();
+    this.addedDate = otherAccount.getAddedDate();
+    this.comment = otherAccount.getComment();
+  }
 }

@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Component
-public interface AccountEntryRepository extends JpaRepository<AccountEntry, Long> {
-}
+public interface AccountEntryRepository extends JpaRepository<AccountEntry, Long> {}
