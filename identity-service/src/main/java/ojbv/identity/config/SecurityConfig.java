@@ -2,13 +2,17 @@ package ojbv.identity.config;
 
 import javax.servlet.http.HttpServletResponse;
 
+import ojbv.identity.filter.JwtTokenFilter;
+import ojbv.identity.repository.UserRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,93 +23,101 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
+@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserRepo userRepo;
-    private JwtTokenFilter jwtTokenFilter;
+  private final UserRepo userRepo;
+  private JwtTokenFilter jwtTokenFilter;
 
-    public SecurityConfig(UserRepo userRepo, JwtTokenFilter jwtTokenFilter){
-        this.userRepo = userRepo;
-        this.jwtTokenFilter = jwtTokenFilter;
-    }
+  public SecurityConfig(UserRepo userRepo, JwtTokenFilter jwtTokenFilter) {
+    this.userRepo = userRepo;
+    this.jwtTokenFilter = jwtTokenFilter;
+  }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.userDetailsService(username -> userRepo
-            .findUSerByName()
-            .orElseThrow(
-                () -> new UsernameNotFoundException(
-                    format("Username [%] not found", username)
-                )
-            )
-        );
-    }
+  @Override
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth.userDetailsService(
+        username ->
+            userRepo
+                .findByUsername(username)
+                .orElseThrow(
+                    () ->
+                        new UsernameNotFoundException(String.format("Username [%] not found", username))));
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception{
-        // Enable CORS and disable CRSF
-        http.cors().and().csrf().disable();
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    // Enable CORS and disable CRSF
+    http.cors().and().csrf().disable();
 
-        // Set session management to stateless
-        http = http
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and();
-        
-        // Set unauthorized requests exception handler
-        http = http
-            .exceptionHandling()
+    // Set session management to stateless
+    http = http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
+
+    // Set unauthorized requests exception handler
+    http =
+        http.exceptionHandling()
             .authenticationEntryPoint(
-                (request,response, ex) -> {
-                    response.sendError(
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        ex.getMessage()
-                    );
-                }
-            
-            )
+                (request, response, ex) -> {
+                  response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+                })
             .and();
 
-        // Set permissions on endpoints
-        http.authorizeRequests()
-            // Public endpoints
-            .antMatchers("/api/public/**").permitAll()
-            .antMatchers(HttpMethod.GET, "/api/authors/**").permitAll()
-            .antMatchers(HttpMethod.GET, "/api/authors/search").permitAll()
-            .antMatchers(HttpMethod.GET, "/api/search/**").permitAll()
-            .antMatchers(HttpMethod.GET, "/api/search/search").permitAll()
-            // Private endpoints
-            .anyRequest().authenticated();
+    // Set permissions on endpoints
+    http.authorizeRequests()
+        // Public endpoints
+        .antMatchers("/api/public/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/api/authors/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/api/authors/search")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/api/search/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/api/search/search")
+        .permitAll()
+        // Role checked private endpoints
+        .antMatchers("/api/admin/user/**")
+        .hasRole(Role.USER_ADMIN)
+        .antMatchers("/api/author/**")
+        .hasRole(Role.AUTHOR_ADMIN)
+        .antMatchers("/api/book/**")
+        .hasRole(Role.BOOK_ADMIN)
+        // Left private endpoints
+        .anyRequest()
+        .authenticated();
 
-        // Add JWT Filter
-        http.addFilterBefore(
-            jwtTokenFilter, 
-            UsernamePasswordAuthenticationFilter.class
-        );
-    }
+    // Add JWT Filter
+    http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+  }
 
-    // Used by spring security if CORS is enabled
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = 
-            new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
+  // Used by spring security if CORS is enabled
+  @Bean
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-    @Override @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowCredentials(true);
+    config.addAllowedOrigin("*");
+    config.addAllowedHeader("*");
+    config.addAllowedMethod("*");
+    source.registerCorsConfiguration("/**", config);
 
+    return new CorsFilter(source);
+  }
+
+  @Override
+  @Bean
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
+  }
+
+  @Bean
+  GrantedAuthorityDefaults grantedAuthorityDefaults() {
+    return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
+  }
 }
