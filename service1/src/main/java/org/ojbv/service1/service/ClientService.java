@@ -27,18 +27,18 @@ public class ClientService {
     return repository.save(client).getId().toString();
   }
 
-  public Client update(String id, Client newAccount) {
+  public Client update(String id, Client newClient) {
     return repository
         .findById(UUID.fromString(id))
         .map(
-            account -> {
-              account.fillFrom(newAccount);
-              return repository.save(account);
+            client -> {
+              client.fillFrom(newClient);
+              return repository.save(client);
             })
         .orElseGet(
             () -> {
-              newAccount.setId(UUID.fromString(id));
-              return repository.save(newAccount);
+              newClient.setId(UUID.fromString(id));
+              return repository.save(newClient);
             });
   }
 

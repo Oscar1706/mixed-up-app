@@ -11,32 +11,32 @@ import java.util.List;
 @RestController
 public class AccountController {
 
-  @Autowired private AccountService accountService;
+  @Autowired private AccountService service;
 
   @GetMapping("/accounts")
   ResponseEntity<List<Account>> all() {
-    return ResponseEntity.ok(accountService.getAll());
+    return ResponseEntity.ok(service.getAll());
   }
 
   @GetMapping("/accounts/{id}")
   ResponseEntity<Account> findById(@PathVariable long id) {
-    return ResponseEntity.ok(accountService.get(id));
+    return ResponseEntity.ok(service.get(id));
   }
 
   @PostMapping("/accounts")
   ResponseEntity<Long> newAccount(@RequestBody Account account) {
-    return ResponseEntity.ok(accountService.create(account));
+    return ResponseEntity.ok(service.create(account));
   }
 
   @PutMapping("/accounts/{id}")
   ResponseEntity<Account> replaceOneAccount(
       @PathVariable long id, @RequestBody Account newAccount) {
-    return ResponseEntity.ok(accountService.update(id, newAccount));
+    return ResponseEntity.ok(service.update(id, newAccount));
   }
 
   @DeleteMapping("/accounts/{id}")
   ResponseEntity deleteById(@PathVariable long id) {
-    accountService.delete(id);
+    service.delete(id);
     return ResponseEntity.noContent().build();
   }
 }
