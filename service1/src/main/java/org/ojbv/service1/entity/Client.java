@@ -26,4 +26,9 @@ public class Client {
 
   private String name;
   private LocalDateTime addedDate;
+
+  public void fillFrom(Client another) {
+    this.name = another.getName();
+    this.addedDate = another.getAddedDate();
+  }
 }

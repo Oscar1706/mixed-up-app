@@ -25,4 +25,11 @@ public class AccountEntry {
   // Account balance once the transaction is done
   @NonNull private Double balanceAfter;
   @NonNull private LocalDateTime transactionDate;
+
+  public void fillFrom(AccountEntry another) {
+    this.amount = another.getAmount();
+    this.transactionType = another.getTransactionType();
+    this.balanceAfter = another.getBalanceAfter();
+    this.transactionDate = another.getTransactionDate();
+  }
 }

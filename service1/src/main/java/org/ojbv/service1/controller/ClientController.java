@@ -1,7 +1,7 @@
 package org.ojbv.service1.controller;
 
-import org.ojbv.service1.controller.errors.EntityNotFoundException;
 import org.ojbv.service1.entity.Client;
+import org.ojbv.service1.errors.EntityNotFoundException;
 import org.ojbv.service1.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

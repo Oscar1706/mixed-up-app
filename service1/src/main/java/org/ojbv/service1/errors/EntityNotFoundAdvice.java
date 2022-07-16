@@ -1,4 +1,4 @@
-package org.ojbv.service1.controller.errors;
+package org.ojbv.service1.errors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class AccountNotFoundAdvice {
+public class EntityNotFoundAdvice {
   @ResponseBody
-  @ExceptionHandler(AccountNotFoundException.class)
+  @ExceptionHandler(EntityNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  String accountNotFoundHandler(AccountNotFoundException ex) {
+  String accountNotFoundHandler(EntityNotFoundException ex) {
     return ex.getMessage();
   }
 }
